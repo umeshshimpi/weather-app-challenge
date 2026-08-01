@@ -81,7 +81,13 @@ src/
     ForecastStrip.tsx    7-day forecast grid
     WeatherConditionIcon.tsx  Maps WeatherIconId → Lucide SVG
     __tests__/
-      WeatherSearch.test.tsx  React Testing Library test
+      mock-weather.ts              Shared fixture for component tests
+      WeatherDisplay.test.tsx      Idle / error / success flows
+      WeatherSearch.test.tsx       Search submit + recent chips
+      CurrentWeather.test.tsx      City / temp render smoke test
+      WeatherDetails.test.tsx      Detail tiles smoke test
+      ForecastStrip.test.tsx       Forecast cards smoke test
+      WeatherConditionIcon.test.tsx Icon accessibility smoke test
   styles/
     main.scss            Entry point — tokens, animations, shell
     _tokens.scss
@@ -248,10 +254,10 @@ npm test
  ✓ |node| apps/api/src/weather/weather.controller.spec.ts
  ✓ |node| apps/api/src/weather/dto/weather-query.dto.spec.ts
  ✓ |node| apps/api/src/weather/dto/suggestions-query.dto.spec.ts
- ✓ |web|  apps/web/src/components/__tests__/WeatherSearch.test.tsx
+ ✓ |web|  apps/web/src/components/__tests__/*.test.tsx
 
- Test Files  6 passed
- Tests       71 passed
+ Test Files  11 passed
+ Tests       81 passed
 ```
 
 Vitest runs two projects (see `vitest.config.ts`): a `node` project for the domain logic and the NestJS API, and a `web` project (jsdom + React Testing Library) for frontend components.
@@ -262,9 +268,9 @@ Vitest runs two projects (see `vitest.config.ts`): a `node` project for the doma
 | `WeatherService` | Success path, city-not-found (404), both upstream failure paths (502), autocomplete suggestions, and that imperial units are actually forwarded to Open-Meteo | `@nestjs/testing` spins up a real Nest module; `fetch` is mocked |
 | `WeatherController` | Confirms each route delegates to the service with the right arguments and default units | `@nestjs/testing` with a mocked `WeatherService` provider |
 | DTOs | Validation passes/fails as expected (`class-validator`), whitespace trimming | `validate()` + `plainToInstance()` directly on the DTO classes |
-| `WeatherSearch` (frontend) | Typing + submitting a city, disabled state while loading, recent-search chips | React Testing Library + `@testing-library/user-event`, `fetch` mocked |
+| Frontend components | Idle/error/success flows (`WeatherDisplay`), search submit + recent chips (`WeatherSearch`), render smoke tests for `CurrentWeather`, `WeatherDetails`, `ForecastStrip`, and `WeatherConditionIcon` | React Testing Library + `@testing-library/user-event`, `fetch` mocked |
 
-Run `npm run coverage` for a full line/branch report. The remaining frontend display components (`CurrentWeather`, `WeatherDetails`, `ForecastStrip`, `WeatherDisplay`) are largely presentational — mapping already-normalized API data into markup — and are the next candidates for tests if the suite were to keep growing.
+Run `npm run coverage` for a full line/branch report.
 
 ---
 

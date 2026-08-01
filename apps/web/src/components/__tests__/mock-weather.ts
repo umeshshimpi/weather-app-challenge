@@ -1,0 +1,57 @@
+import type { WeatherResponse } from "@weather/domain";
+
+/** Minimal fixture used by presentational component tests. */
+export const mockWeather: WeatherResponse = {
+  location: {
+    name: "London",
+    country: "United Kingdom",
+    countryCode: "GB",
+    region: "England",
+    latitude: 51.5085,
+    longitude: -0.1257,
+  },
+  current: {
+    temperature: 68,
+    feelsLike: 66,
+    humidity: 55,
+    pressure: 1013,
+    windSpeed: 10,
+    windDirection: 250,
+    windDirectionLabel: "W",
+    windGusts: 15,
+    cloudCover: 40,
+    precipitation: 0,
+    weatherCode: 2,
+    description: "Partly Cloudy",
+    isDay: true,
+  },
+  daily: [
+    {
+      date: "2026-08-01",
+      maxTemp: 72,
+      minTemp: 58,
+      weatherCode: 2,
+      description: "Partly Cloudy",
+      precipitationSum: 0,
+      precipitationProbability: 10,
+      maxWindSpeed: 14,
+      uvIndexMax: 5,
+      sunrise: "2026-08-01T05:30:00",
+      sunset: "2026-08-01T20:45:00",
+    },
+    {
+      date: "2026-08-02",
+      maxTemp: 70,
+      minTemp: 56,
+      weatherCode: 61,
+      description: "Slight Rain",
+      precipitationSum: 2,
+      precipitationProbability: 60,
+      maxWindSpeed: 12,
+      uvIndexMax: 3,
+      sunrise: "2026-08-02T05:31:00",
+      sunset: "2026-08-02T20:43:00",
+    },
+  ],
+  unit: "imperial",
+};
