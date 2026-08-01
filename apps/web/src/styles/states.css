@@ -1,0 +1,102 @@
+/* ─── Loading skeleton ────────────────────────────────────────────────────── */
+.loading-card {
+  border-radius: var(--radius-card);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.skeleton-circle {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  background: rgba(255 255 255 / 20%);
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.skeleton-bar-lg {
+  width: 8rem;
+  height: 2rem;
+  border-radius: var(--radius-tile);
+  background: rgba(255 255 255 / 20%);
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.skeleton-bar-md {
+  width: 12rem;
+  height: 1.25rem;
+  border-radius: var(--radius-tile);
+  background: rgba(255 255 255 / 15%);
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.skeleton-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.skeleton-tile {
+  height: 4rem;
+  border-radius: var(--radius-tile);
+  background: rgba(255 255 255 / 10%);
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+/* ─── Error state ─────────────────────────────────────────────────────────── */
+.error-card {
+  border-radius: var(--radius-card);
+  padding: 2rem;
+  text-align: center;
+  color: var(--text);
+}
+
+.error-icon {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.error-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.error-message {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  margin: 0.25rem 0 0;
+}
+
+/* ─── Idle / welcome state ────────────────────────────────────────────────── */
+.idle-card {
+  border-radius: var(--radius-card);
+  padding: 3rem 2rem;
+  text-align: center;
+  color: var(--text);
+}
+
+.idle-icon {
+  font-size: 3.75rem;
+  margin-bottom: 1rem;
+  display: inline-block;
+  animation: icon-pulse 3s ease-in-out infinite;
+}
+
+.idle-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+  color: var(--text);
+}
+
+.idle-hint {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  margin: 0;
+}

@@ -1,0 +1,53 @@
+/* ─── Weather details panel ───────────────────────────────────────────────── */
+.details-card {
+  border-radius: var(--radius-card);
+  padding: 1.5rem;
+}
+
+.section-heading {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin: 0 0 1rem;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+@media (min-width: 480px) {
+  .details-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ─── Individual detail tile ─────────────────────────────────────────────── */
+.detail-tile {
+  border-radius: var(--radius-tile);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.detail-label {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.detail-value {
+  color: var(--text);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.detail-sub {
+  color: var(--text-faint);
+  font-size: 0.75rem;
+}
