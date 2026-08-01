@@ -68,8 +68,63 @@
   background: var(--surface-active);
 }
 
-/* ─── Unit toggle ─────────────────────────────────────────────────────────── */
-.unit-toggle-wrap {
+/* ─── Suggestions dropdown ────────────────────────────────────────────────── */
+.suggestions-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 50;
+  list-style: none;
+  margin: 0;
+  padding: 0.25rem;
+  border-radius: var(--radius-tile);
+  background: rgba(10 18 38 / 92%);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.suggestion-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  border-radius: calc(var(--radius-tile) - 0.25rem);
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  gap: 0.5rem;
+  transition: background var(--transition);
+}
+
+.suggestion-item:hover,
+.suggestion-item:focus {
+  background: rgba(255 255 255 / 12%);
+  outline: none;
+}
+
+.suggestion-name {
+  color: var(--text);
+  font-size: 0.9375rem;
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.suggestion-country {
+  color: var(--text-faint);
+  font-size: 0.8125rem;
+  flex-shrink: 0;
+}
+
+/* ─── Unit toggle ─────────────────────────────────────────────────────────── */.unit-toggle-wrap {
   display: flex;
   justify-content: center;
 }

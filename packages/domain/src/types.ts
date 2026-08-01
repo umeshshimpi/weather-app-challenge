@@ -46,6 +46,13 @@ export interface WeatherResponse {
   unit: TemperatureUnit;
 }
 
+/** A lightweight match returned by the location autocomplete endpoint. */
+export interface LocationSuggestion {
+  name: string;
+  country: string;
+  region?: string;
+}
+
 // Raw Open-Meteo shapes — only used inside the API service
 export interface OpenMeteoGeoResult {
   id: number;

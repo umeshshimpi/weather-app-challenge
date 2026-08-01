@@ -57,7 +57,7 @@ export function WeatherDisplay() {
 
           <header className="app-header">
             <h1 className="app-title">⛅ WeatherNow</h1>
-            <p className="app-subtitle">Real-time weather</p>
+            <p className="app-subtitle">Real-time weather application</p>
           </header>
 
           <section className="search-form">

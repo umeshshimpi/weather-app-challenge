@@ -1,6 +1,7 @@
 import { BadGatewayException, Injectable, NotFoundException } from "@nestjs/common";
 import type {
   GeoLocation,
+  LocationSuggestion,
   OpenMeteoGeoResponse,
   OpenMeteoWeatherResponse,
   TemperatureUnit,
@@ -24,6 +25,31 @@ export class WeatherService {
       unit
     );
     return this.normalizeWeatherResponse(raw, location, unit);
+  }
+
+  /**
+   * Returns up to 8 location matches for a partial city name.
+   * Used by the frontend autocomplete dropdown.
+   * Direct REST call — no third-party wrapper.
+   */
+  async getSuggestions(query: string): Promise<LocationSuggestion[]> {
+    const url = `${GEO_API_URL}?name=${encodeURIComponent(query)}&count=8&language=en&format=json`;
+
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new BadGatewayException(
+        `Geocoding request failed with status ${response.status}`
+      );
+    }
+
+    const data = (await response.json()) as OpenMeteoGeoResponse;
+    if (!data.results?.length) return [];
+
+    return data.results.map((r) => ({
+      name: r.name,
+      country: r.country,
+      region: r.admin1,
+    }));
   }
 
   /**
