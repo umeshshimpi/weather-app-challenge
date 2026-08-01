@@ -2,8 +2,8 @@
  * Base URL for the NestJS API.
  *
  * Locally this is empty so requests stay same-origin and Vite proxies `/api`
- * to the NestJS server. In production (Netlify), set VITE_API_URL to the
- * deployed API origin, e.g. https://your-api.up.railway.app
+ * to the NestJS server. In production (Netlify), VITE_API_URL is set to the
+ * deployed API origin.
  */
 export const API_BASE_URL = (import.meta.env.VITE_API_URL ?? "").replace(/\/$/, "");
 

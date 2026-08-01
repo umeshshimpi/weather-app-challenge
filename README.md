@@ -56,11 +56,14 @@ src/
   weather/
     weather.module.ts
     weather.controller.ts          GET /api/weather, GET /api/weather/suggestions
+    weather.controller.spec.ts     Unit tests (Vitest + @nestjs/testing)
     weather.service.ts             Geocoding + forecast fetch + normalisation
+    weather.service.spec.ts        Unit tests (Vitest + @nestjs/testing)
     dto/
       weather-query.dto.ts         class-validator DTO (city, units)
+      weather-query.dto.spec.ts    Validation unit tests
       suggestions-query.dto.ts     class-validator DTO (q — min 2 chars)
-    weather.service.spec.ts        Unit tests (Vitest + @nestjs/testing)
+      suggestions-query.dto.spec.ts Validation unit tests
 ```
 
 ### apps/web
@@ -74,9 +77,11 @@ src/
     WeatherDisplay.tsx   State management, fetch, layout
     WeatherSearch.tsx    Search input with debounced autocomplete dropdown
     CurrentWeather.tsx   Main temperature card
-    WeatherDetails.tsx   Humidity, wind, pressure, dew point
+    WeatherDetails.tsx   Humidity, wind, pressure, comfort index
     ForecastStrip.tsx    7-day forecast grid
     WeatherConditionIcon.tsx  Maps WeatherIconId → Lucide SVG
+    __tests__/
+      WeatherSearch.test.tsx  React Testing Library test
   styles/
     main.scss            Entry point — tokens, animations, shell
     _tokens.scss
@@ -238,14 +243,28 @@ Beyond fetching and displaying raw data, the app derives several additional insi
 ```
 npm test
 
- ✓ packages/domain/src/__tests__/weather-utils.test.ts
- ✓ apps/api/src/weather/weather.service.spec.ts
+ ✓ |node| packages/domain/src/__tests__/weather-utils.test.ts
+ ✓ |node| apps/api/src/weather/weather.service.spec.ts
+ ✓ |node| apps/api/src/weather/weather.controller.spec.ts
+ ✓ |node| apps/api/src/weather/dto/weather-query.dto.spec.ts
+ ✓ |node| apps/api/src/weather/dto/suggestions-query.dto.spec.ts
+ ✓ |web|  apps/web/src/components/__tests__/WeatherSearch.test.tsx
 
- Test Files  2 passed
- Tests       37 passed
+ Test Files  6 passed
+ Tests       71 passed
 ```
 
-The domain tests cover every pure utility function. The service tests use `@nestjs/testing` to spin up a real NestJS test module and mock `fetch` to verify the success path, city-not-found (404), and both upstream failure paths (502).
+Vitest runs two projects (see `vitest.config.ts`): a `node` project for the domain logic and the NestJS API, and a `web` project (jsdom + React Testing Library) for frontend components.
+
+| Layer | What's covered | How |
+|-------|-----------------|-----|
+| Domain (`packages/domain`) | Every pure utility function — icon mapping, recommendations, comfort index, formatting — including edge-case branches (moderate UV, imperial/metric, etc.) | Plain Vitest unit tests, 100% line coverage |
+| `WeatherService` | Success path, city-not-found (404), both upstream failure paths (502), autocomplete suggestions, and that imperial units are actually forwarded to Open-Meteo | `@nestjs/testing` spins up a real Nest module; `fetch` is mocked |
+| `WeatherController` | Confirms each route delegates to the service with the right arguments and default units | `@nestjs/testing` with a mocked `WeatherService` provider |
+| DTOs | Validation passes/fails as expected (`class-validator`), whitespace trimming | `validate()` + `plainToInstance()` directly on the DTO classes |
+| `WeatherSearch` (frontend) | Typing + submitting a city, disabled state while loading, recent-search chips | React Testing Library + `@testing-library/user-event`, `fetch` mocked |
+
+Run `npm run coverage` for a full line/branch report. The remaining frontend display components (`CurrentWeather`, `WeatherDetails`, `ForecastStrip`, `WeatherDisplay`) are largely presentational — mapping already-normalized API data into markup — and are the next candidates for tests if the suite were to keep growing.
 
 ---
 
@@ -275,6 +294,6 @@ A few things already in place and a few that would be added before a real deploy
 | Backend | NestJS 10, TypeScript 5 |
 | Frontend | React 19, Vite 6 |
 | Styling | SCSS with custom properties — no CSS framework |
-| Testing | Vitest 3, @nestjs/testing |
+| Testing | Vitest 3, @nestjs/testing, React Testing Library |
 | Weather data | Open-Meteo |
 | Runtime | Node.js 18+ |

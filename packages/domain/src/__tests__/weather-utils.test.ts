@@ -10,6 +10,7 @@ import {
   fahrenheitToCelsius,
   getComfortIndex,
   formatTemperature,
+  formatTime,
   formatWeekday,
   getConditionClass,
 } from "../weather-utils";
@@ -129,6 +130,21 @@ describe("getWeatherRecommendation", () => {
     const rec = getWeatherRecommendation(0, 22, 9);
     expect(rec.toLowerCase()).toContain("sun");
   });
+
+  it("recommends sunscreen for moderate UV on a mild day", () => {
+    const rec = getWeatherRecommendation(0, 22, 7);
+    expect(rec.toLowerCase()).toContain("sunscreen");
+  });
+
+  it("recommends staying hydrated on a hot, low-UV day", () => {
+    const rec = getWeatherRecommendation(0, 32, 2);
+    expect(rec.toLowerCase()).toContain("hydrated");
+  });
+
+  it("returns a pleasant message for mild, calm conditions", () => {
+    const rec = getWeatherRecommendation(0, 20, 2);
+    expect(rec.toLowerCase()).toContain("pleasant");
+  });
 });
 
 describe("celsiusToFahrenheit", () => {
@@ -200,6 +216,18 @@ describe("formatWeekday", () => {
   it("returns a 3-letter weekday abbreviation", () => {
     const result = formatWeekday("2026-01-05");
     expect(result).toBe("Mon");
+  });
+});
+
+describe("formatTime", () => {
+  it("formats an ISO datetime as a 12-hour clock time", () => {
+    const result = formatTime("2026-01-05T14:30:00");
+    expect(result).toBe("2:30 PM");
+  });
+
+  it("pads single-digit minutes", () => {
+    const result = formatTime("2026-01-05T09:05:00");
+    expect(result).toBe("9:05 AM");
   });
 });
 

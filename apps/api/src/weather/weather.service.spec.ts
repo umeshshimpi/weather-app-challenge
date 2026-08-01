@@ -75,6 +75,21 @@ describe("WeatherService", () => {
     expect(result.unit).toBe("metric");
   });
 
+  it("requests fahrenheit and mph units when imperial units are chosen", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({ ok: true, json: async () => mockGeoResponse })
+      .mockResolvedValueOnce({ ok: true, json: async () => mockWeatherResponse });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await service.getWeatherForCity("London", "imperial");
+
+    const weatherRequestUrl = fetchMock.mock.calls[1][0] as string;
+    expect(weatherRequestUrl).toContain("temperature_unit=fahrenheit");
+    expect(weatherRequestUrl).toContain("wind_speed_unit=mph");
+    expect(result.unit).toBe("imperial");
+  });
+
   it("throws NotFoundException when the city is not found", async () => {
     vi.stubGlobal(
       "fetch",
@@ -111,5 +126,64 @@ describe("WeatherService", () => {
     await expect(service.getWeatherForCity("London", "metric")).rejects.toThrow(
       BadGatewayException
     );
+  });
+
+  describe("getSuggestions", () => {
+    it("returns matching locations for a valid query", async () => {
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({
+            results: [
+              {
+                id: 1,
+                name: "London",
+                latitude: 51.5085,
+                longitude: -0.1257,
+                country: "United Kingdom",
+                country_code: "GB",
+                admin1: "England",
+              },
+              {
+                id: 2,
+                name: "London",
+                latitude: 42.9834,
+                longitude: -81.233,
+                country: "Canada",
+                country_code: "CA",
+                admin1: "Ontario",
+              },
+            ],
+          }),
+        })
+      );
+
+      const result = await service.getSuggestions("Lon");
+
+      expect(result).toHaveLength(2);
+      expect(result[0]).toEqual({
+        name: "London",
+        country: "United Kingdom",
+        region: "England",
+      });
+    });
+
+    it("returns an empty array when no locations match", async () => {
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValueOnce({ ok: true, json: async () => ({ results: [] }) })
+      );
+
+      const result = await service.getSuggestions("Atlantis");
+
+      expect(result).toEqual([]);
+    });
+
+    it("throws BadGatewayException when the geocoding request fails", async () => {
+      vi.stubGlobal("fetch", vi.fn().mockResolvedValueOnce({ ok: false, status: 500 }));
+
+      await expect(service.getSuggestions("Lon")).rejects.toThrow(BadGatewayException);
+    });
   });
 });

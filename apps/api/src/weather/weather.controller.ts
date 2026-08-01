@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Inject,
   Query,
 } from "@nestjs/common";
 import {
@@ -17,7 +18,7 @@ import { WeatherService } from "./weather.service";
 @ApiTags("weather")
 @Controller("api/weather")
 export class WeatherController {
-  constructor(private readonly weatherService: WeatherService) {}
+  constructor(@Inject(WeatherService) private readonly weatherService: WeatherService) {}
 
   @Get()
   @ApiOperation({
