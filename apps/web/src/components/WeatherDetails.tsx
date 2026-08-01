@@ -3,10 +3,11 @@ import {
   CloudRain,
   Droplets,
   Gauge,
-  Thermometer,
+  Smile,
   Wind,
 } from "lucide-react";
 import type { WeatherResponse } from "@weather/domain";
+import { fahrenheitToCelsius, getComfortIndex } from "@weather/domain";
 
 interface WeatherDetailsProps {
   data: WeatherResponse;
@@ -36,6 +37,9 @@ export function WeatherDetails({ data }: WeatherDetailsProps) {
   const { current, unit } = data;
   const windUnit = unit === "imperial" ? "mph" : "km/h";
   const pressureHpa = Math.round(current.pressure);
+  const tempCelsius =
+    unit === "imperial" ? fahrenheitToCelsius(current.temperature) : current.temperature;
+  const comfort = getComfortIndex(tempCelsius, current.humidity);
 
   return (
     <div className="glass-card details-card">
@@ -84,29 +88,12 @@ export function WeatherDetails({ data }: WeatherDetailsProps) {
           sub="Last hour"
         />
         <DetailTile
-          icon={<Thermometer size={14} />}
-          label="Dew Point"
-          value={`${computeDewPoint(current.temperature, current.humidity, unit)}°`}
-          sub="Moisture level"
+          icon={<Smile size={14} />}
+          label="Comfort"
+          value={comfort.label}
+          sub={comfort.description}
         />
       </div>
     </div>
   );
-}
-
-/**
- * Approximates dew point using the Magnus formula.
- */
-function computeDewPoint(
-  temp: number,
-  humidity: number,
-  unit: "metric" | "imperial"
-): number {
-  const tempC = unit === "imperial" ? ((temp - 32) * 5) / 9 : temp;
-  const a = 17.27;
-  const b = 237.7;
-  const alpha = (a * tempC) / (b + tempC) + Math.log(humidity / 100);
-  const dewC = (b * alpha) / (a - alpha);
-  const result = unit === "imperial" ? (dewC * 9) / 5 + 32 : dewC;
-  return Math.round(result);
 }

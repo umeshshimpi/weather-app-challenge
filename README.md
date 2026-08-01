@@ -229,7 +229,7 @@ Beyond fetching and displaying raw data, the app derives several additional insi
 | `getTemperatureCategory()` | Human comfort label (Freezing → Hot) |
 | `getWindDirectionLabel()` | Converts wind degrees to compass rose (N, NE, E…) |
 | `getConditionClass()` | Returns a semantic CSS class name for the background gradient based on condition and time of day |
-| Dew point (Magnus formula) | Computed in `WeatherDetails` from temperature + humidity — not fetched from the API |
+| `getComfortIndex()` | Combines temperature + humidity into a "Humid", "Damp", "Dry Heat", or "Comfortable" read — neither field alone tells this story |
 
 ---
 

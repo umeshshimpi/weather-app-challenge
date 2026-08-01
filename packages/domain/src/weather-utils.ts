@@ -113,6 +113,36 @@ export function celsiusToFahrenheit(celsius: number): number {
   return Math.round(celsius * 9 / 5 + 32);
 }
 
+export function fahrenheitToCelsius(fahrenheit: number): number {
+  return (fahrenheit - 32) * (5 / 9);
+}
+
+/**
+ * Combines temperature and humidity into a simple comfort description.
+ * Heat and humidity together feel muggier than either alone; cold and
+ * humidity together feel damp. This is the kind of everyday judgment a
+ * single weather field can't express on its own.
+ */
+export function getComfortIndex(
+  tempCelsius: number,
+  humidity: number
+): { label: string; description: string } {
+  const isHot = tempCelsius > 24;
+  const isCold = tempCelsius < 10;
+  const isHumid = humidity > 60;
+
+  if (isHot && isHumid) {
+    return { label: "Humid", description: "Feels warmer than the actual temperature" };
+  }
+  if (isCold && isHumid) {
+    return { label: "Damp", description: "Cold air carrying a lot of moisture" };
+  }
+  if (isHot && !isHumid) {
+    return { label: "Dry Heat", description: "Hot, but the air itself is dry" };
+  }
+  return { label: "Comfortable", description: "Pleasant temperature and humidity" };
+}
+
 export function formatTemperature(value: number, unit: TemperatureUnit): string {
   const symbol = unit === "imperial" ? "°F" : "°C";
   return `${Math.round(value)}${symbol}`;

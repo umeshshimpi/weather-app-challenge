@@ -1,6 +1,7 @@
 import { Sunrise, Sunset } from "lucide-react";
 import type { WeatherResponse } from "@weather/domain";
 import {
+  fahrenheitToCelsius,
   formatTemperature,
   formatTime,
   getTemperatureCategory,
@@ -18,7 +19,7 @@ export function CurrentWeather({ data }: CurrentWeatherProps) {
   const { location, current, daily, unit } = data;
   const today = daily[0];
   const tempInCelsius =
-    unit === "imperial" ? (current.temperature - 32) * (5 / 9) : current.temperature;
+    unit === "imperial" ? fahrenheitToCelsius(current.temperature) : current.temperature;
 
   const { label: tempLabel } = getTemperatureCategory(tempInCelsius);
   const uvInfo = getUvIndexLevel(today.uvIndexMax);

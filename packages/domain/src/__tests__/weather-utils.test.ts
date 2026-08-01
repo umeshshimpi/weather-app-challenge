@@ -7,6 +7,8 @@ import {
   getTemperatureCategory,
   getWeatherRecommendation,
   celsiusToFahrenheit,
+  fahrenheitToCelsius,
+  getComfortIndex,
   formatTemperature,
   formatWeekday,
   getConditionClass,
@@ -140,6 +142,43 @@ describe("celsiusToFahrenheit", () => {
 
   it("converts -40°C to -40°F (the crossover point)", () => {
     expect(celsiusToFahrenheit(-40)).toBe(-40);
+  });
+});
+
+describe("fahrenheitToCelsius", () => {
+  it("converts 32°F to 0°C", () => {
+    expect(fahrenheitToCelsius(32)).toBe(0);
+  });
+
+  it("converts 212°F to 100°C", () => {
+    expect(fahrenheitToCelsius(212)).toBe(100);
+  });
+
+  it("is the inverse of celsiusToFahrenheit at the crossover point", () => {
+    expect(fahrenheitToCelsius(-40)).toBe(-40);
+  });
+});
+
+describe("getComfortIndex", () => {
+  it("returns 'Humid' for hot and humid conditions", () => {
+    expect(getComfortIndex(28, 75).label).toBe("Humid");
+  });
+
+  it("returns 'Damp' for cold and humid conditions", () => {
+    expect(getComfortIndex(5, 80).label).toBe("Damp");
+  });
+
+  it("returns 'Dry Heat' for hot conditions with low humidity", () => {
+    expect(getComfortIndex(30, 20).label).toBe("Dry Heat");
+  });
+
+  it("returns 'Comfortable' for mild temperature and moderate humidity", () => {
+    expect(getComfortIndex(20, 45).label).toBe("Comfortable");
+  });
+
+  it("includes a description for every label", () => {
+    expect(getComfortIndex(28, 75).description).toBeTruthy();
+    expect(getComfortIndex(20, 45).description).toBeTruthy();
   });
 });
 
