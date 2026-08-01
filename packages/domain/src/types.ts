@@ -53,6 +53,24 @@ export interface LocationSuggestion {
   region?: string;
 }
 
+/**
+ * Semantic identifier for a weather condition icon.
+ * The frontend maps these IDs to SVG icon components — keeping visual
+ * implementation details out of the domain layer.
+ */
+export type WeatherIconId =
+  | "clear-day"
+  | "clear-night"
+  | "partly-cloudy-day"
+  | "partly-cloudy-night"
+  | "overcast"
+  | "fog"
+  | "drizzle"
+  | "rain"
+  | "snow"
+  | "snow-showers"
+  | "thunderstorm";
+
 // Raw Open-Meteo shapes — only used inside the API service
 export interface OpenMeteoGeoResult {
   id: number;

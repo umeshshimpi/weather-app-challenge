@@ -1,4 +1,20 @@
-/* ─── Loading skeleton ────────────────────────────────────────────────────── */
+// App header
+// These styles override / extend the app-shell definitions for the header text
+// and the SVG icon next to the title.
+.app-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.app-title-icon {
+  display: inline-flex;
+  color: var(--text);
+  flex-shrink: 0;
+}
+
+// Loading skeleton
 .loading-card {
   border-radius: var(--radius-card);
   padding: 2rem;
@@ -8,28 +24,32 @@
   gap: 1rem;
 }
 
+%skeleton-base {
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
 .skeleton-circle {
+  @extend %skeleton-base;
   width: 4rem;
   height: 4rem;
   border-radius: 50%;
   background: rgba(255 255 255 / 20%);
-  animation: skeleton-pulse 1.5s ease-in-out infinite;
 }
 
 .skeleton-bar-lg {
+  @extend %skeleton-base;
   width: 8rem;
   height: 2rem;
   border-radius: var(--radius-tile);
   background: rgba(255 255 255 / 20%);
-  animation: skeleton-pulse 1.5s ease-in-out infinite;
 }
 
 .skeleton-bar-md {
+  @extend %skeleton-base;
   width: 12rem;
   height: 1.25rem;
   border-radius: var(--radius-tile);
   background: rgba(255 255 255 / 15%);
-  animation: skeleton-pulse 1.5s ease-in-out infinite;
 }
 
 .skeleton-row {
@@ -41,13 +61,13 @@
 }
 
 .skeleton-tile {
+  @extend %skeleton-base;
   height: 4rem;
   border-radius: var(--radius-tile);
   background: rgba(255 255 255 / 10%);
-  animation: skeleton-pulse 1.5s ease-in-out infinite;
 }
 
-/* ─── Error state ─────────────────────────────────────────────────────────── */
+// Error state
 .error-card {
   border-radius: var(--radius-card);
   padding: 2rem;
@@ -55,10 +75,11 @@
   color: var(--text);
 }
 
+// SVG error icon — sized via the `size` prop on the Lucide component
 .error-icon {
-  font-size: 2.5rem;
-  display: block;
+  display: inline-flex;
   margin-bottom: 0.75rem;
+  color: var(--text);
 }
 
 .error-title {
@@ -73,7 +94,7 @@
   margin: 0.25rem 0 0;
 }
 
-/* ─── Idle / welcome state ────────────────────────────────────────────────── */
+// Idle / welcome state
 .idle-card {
   border-radius: var(--radius-card);
   padding: 3rem 2rem;
@@ -81,10 +102,11 @@
   color: var(--text);
 }
 
+// SVG idle icon — sized via the `size` prop on the Lucide component
 .idle-icon {
-  font-size: 3.75rem;
+  display: inline-flex;
   margin-bottom: 1rem;
-  display: inline-block;
+  color: var(--text);
   animation: icon-pulse 3s ease-in-out infinite;
 }
 

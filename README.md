@@ -1,6 +1,6 @@
 # WeatherNow
 
-Search any city in the world and instantly see current conditions, a 7-day forecast, UV safety advice, dew point, and a smart recommendation ("bring an umbrella", "stay hydrated", etc.). The background colour shifts based on whether it's sunny, rainy, snowy, or a thunderstorm.
+Search any city in the world and instantly see current conditions, a 7-day forecast, UV safety advice, dew point, and a smart recommendation ("bring an umbrella", "stay hydrated", etc.). The background shifts based on whether it's sunny, rainy, snowy, or a thunderstorm. As you type, a location dropdown suggests matching cities.
 
 Built as a **NestJS API + React/Vite frontend** monorepo. No API keys needed.
 
@@ -45,19 +45,22 @@ packages/
   domain/       Shared TypeScript types and pure utility functions
 ```
 
+The domain package is the key architectural decision: both apps import from it, so business logic (UV tiers, temperature categories, weather recommendations) lives in one place with no duplication. Swapping the weather provider only requires changes to `apps/api/src/weather/weather.service.ts`.
+
 ### apps/api
 
 ```
 src/
-  main.ts                     Bootstrap: CORS, ValidationPipe, Swagger
-  app.module.ts               Root NestJS module
+  main.ts                          Bootstrap: CORS, ValidationPipe, Swagger
+  app.module.ts                    Root NestJS module
   weather/
     weather.module.ts
-    weather.controller.ts     GET /api/weather
-    weather.service.ts        Geocoding + forecast fetch + normalisation
+    weather.controller.ts          GET /api/weather, GET /api/weather/suggestions
+    weather.service.ts             Geocoding + forecast fetch + normalisation
     dto/
-      weather-query.dto.ts    class-validator DTO (city, units)
-    weather.service.spec.ts   Unit tests (Vitest + @nestjs/testing)
+      weather-query.dto.ts         class-validator DTO (city, units)
+      suggestions-query.dto.ts     class-validator DTO (q — min 2 chars)
+    weather.service.spec.ts        Unit tests (Vitest + @nestjs/testing)
 ```
 
 ### apps/web
@@ -68,16 +71,25 @@ src/
   App.tsx
   components/
     WeatherDisplay.tsx   State management, fetch, layout
-    WeatherSearch.tsx    Search input form
+    WeatherSearch.tsx    Search input with debounced autocomplete dropdown
     CurrentWeather.tsx   Main temperature card
     WeatherDetails.tsx   Humidity, wind, pressure, dew point
     ForecastStrip.tsx    7-day forecast grid
-  styles/index.css        Tailwind + glassmorphism utilities
+  styles/
+    styles.css           Entry point — imports all feature stylesheets
+    theme.css            CSS custom properties + condition gradients + resets
+    motion.css           @keyframes
+    layout.css           Page wrapper, container, header
+    search.css           Form, input, autocomplete dropdown
+    weather-card.css     Current weather card
+    details.css          Detail tiles grid
+    forecast.css         7-day forecast strip
+    states.css           Loading skeletons, error, idle states
 ```
 
 ### packages/domain
 
-Shared between both apps. Contains all TypeScript interfaces (`types.ts`) and pure functions (`weather-utils.ts`). No NestJS or React imports — just logic.
+Shared between both apps. Contains all TypeScript interfaces (`types.ts`) and pure functions (`weather-utils.ts`). No NestJS or React imports — just logic and types.
 
 ---
 
@@ -157,6 +169,21 @@ Interactive documentation is at **http://localhost:3000/docs** (Swagger UI).
 | 404 | City name not recognised by geocoding |
 | 502 | Upstream Open-Meteo request failed |
 
+### GET /api/weather/suggestions
+
+| Query param | Required | Description |
+|-------------|----------|-------------|
+| `q` | Yes | Partial city name — minimum 2 characters |
+
+**200 OK** — returns up to 8 matching locations for the autocomplete dropdown.
+
+```json
+[
+  { "name": "London", "country": "United Kingdom", "region": "England" },
+  { "name": "London", "country": "Canada", "region": "Ontario" }
+]
+```
+
 ---
 
 ## Business Logic
@@ -169,8 +196,8 @@ Beyond fetching and displaying raw data, the app derives several additional insi
 | `getUvIndexLevel()` | WHO safety tier (Low → Extreme) with protective advice |
 | `getTemperatureCategory()` | Human comfort label (Freezing → Hot) |
 | `getWindDirectionLabel()` | Converts wind degrees to compass rose (N, NE, E…) |
-| `getWeatherGradient()` | Picks a Tailwind gradient for the full-page background based on condition and time of day |
-| Dew point (Magnus formula) | Computed in `WeatherDetails` from temperature + humidity, not fetched |
+| `getConditionClass()` | Returns a semantic CSS class name for the background gradient based on condition and time of day |
+| Dew point (Magnus formula) | Computed in `WeatherDetails` from temperature + humidity — not fetched from the API |
 
 ---
 
@@ -179,11 +206,11 @@ Beyond fetching and displaying raw data, the app derives several additional insi
 ```
 npm test
 
- ✓ packages/domain/src/__tests__/weather-utils.test.ts   (29 tests)
+ ✓ packages/domain/src/__tests__/weather-utils.test.ts   (31 tests)
  ✓ apps/api/src/weather/weather.service.spec.ts           (4 tests)
 
  Test Files  2 passed
- Tests       33 passed
+ Tests       35 passed
 ```
 
 The domain tests cover every pure utility function. The service tests use `@nestjs/testing` to spin up a real NestJS test module and mock `fetch` to verify the success path, city-not-found (404), and both upstream failure paths (502).
@@ -197,13 +224,14 @@ A few things already in place and a few that would be added before a real deploy
 | Area | Status |
 |------|--------|
 | Input validation | `class-validator` DTOs + `ValidationPipe` (`whitelist`, `forbidNonWhitelisted`, `transform`) |
-| Error handling | NestJS HTTP exceptions with structured JSON — no raw stack traces leak |
+| Error handling | NestJS HTTP exceptions with structured JSON — no raw stack traces exposed |
 | Secrets | All API calls are server-side; nothing sensitive reaches the browser |
 | Structured logging | NestJS `Logger` (replaces `console.log`) |
 | Provider swap | Change only `weather.service.ts` to use a different weather API |
-| Response caching | Would add `@nestjs/cache-manager` + a short TTL (e.g. 5 min) |
+| Error monitoring | Would add Sentry or Datadog APM — `Logger` calls are already the right hook points |
+| Response caching | Would add `@nestjs/cache-manager` + a short TTL (e.g. 5 min) to avoid hammering the upstream on repeated city searches |
 | Rate limiting | Would add `@nestjs/throttler` to the app module |
-| Health endpoint | Would add a `GET /health` route for load-balancer checks |
+| Health endpoint | Would add `GET /health` for load-balancer checks |
 | CI | `npm test` runs clean with no external services needed |
 
 ---
@@ -213,7 +241,8 @@ A few things already in place and a few that would be added before a real deploy
 | | |
 |--|--|
 | Backend | NestJS 10, TypeScript 5 |
-| Frontend | React 19, Vite 6, Tailwind CSS v4 |
+| Frontend | React 19, Vite 6 |
+| Styling | Plain CSS with custom properties — no framework |
 | Testing | Vitest 3, @nestjs/testing |
 | Weather data | Open-Meteo |
 | Runtime | Node.js 18+ |

@@ -1,12 +1,14 @@
+import { Sunrise, Sunset } from "lucide-react";
 import type { WeatherResponse } from "@weather/domain";
 import {
   formatTemperature,
   formatTime,
   getTemperatureCategory,
   getUvIndexLevel,
-  getWeatherEmoji,
+  getWeatherIconId,
   getWeatherRecommendation,
 } from "@weather/domain";
+import { WeatherConditionIcon } from "./WeatherConditionIcon";
 
 interface CurrentWeatherProps {
   data: WeatherResponse;
@@ -37,9 +39,12 @@ export function CurrentWeather({ data }: CurrentWeatherProps) {
       </div>
 
       <div className="weather-main-row">
-        <span className="weather-icon">
-          {getWeatherEmoji(current.weatherCode, current.isDay)}
-        </span>
+        <WeatherConditionIcon
+          id={getWeatherIconId(current.weatherCode, current.isDay)}
+          size={64}
+          className="weather-icon"
+          aria-label={current.description}
+        />
         <div className="weather-temp">
           {formatTemperature(current.temperature, unit)}
         </div>
@@ -64,11 +69,15 @@ export function CurrentWeather({ data }: CurrentWeatherProps) {
           </div>
         </div>
         <div className="glass-tile weather-meta-tile">
-          <div className="weather-meta-label">🌅 Sunrise</div>
+          <div className="weather-meta-label">
+            <Sunrise size={14} aria-hidden="true" /> Sunrise
+          </div>
           <div className="weather-meta-value">{formatTime(today.sunrise)}</div>
         </div>
         <div className="glass-tile weather-meta-tile">
-          <div className="weather-meta-label">🌇 Sunset</div>
+          <div className="weather-meta-label">
+            <Sunset size={14} aria-hidden="true" /> Sunset
+          </div>
           <div className="weather-meta-value">{formatTime(today.sunset)}</div>
         </div>
       </div>

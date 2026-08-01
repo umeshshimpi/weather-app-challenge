@@ -1,0 +1,18 @@
+// Entry point — imports every stylesheet in dependency order.
+//
+// Global foundations (tokens, animations, shell) are kept in styles/ because
+// they are shared across all components. Component-specific stylesheets live
+// next to their .tsx files for co-location and easier maintainability.
+//
+// _tokens.scss must be first: all other files rely on its CSS custom properties.
+
+@use 'tokens';
+@use 'animations';
+@use 'app-shell';
+
+// Component stylesheets (co-located with their React components)
+@use '../components/WeatherSearch';
+@use '../components/CurrentWeather';
+@use '../components/WeatherDetails';
+@use '../components/ForecastStrip';
+@use '../components/WeatherDisplay';

@@ -1,0 +1,15 @@
+// Reusable surface patterns extracted as mixins to avoid repetition
+// across component stylesheets.
+
+@mixin glass-surface {
+  background:              var(--surface);
+  backdrop-filter:         var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border:                  1px solid var(--border);
+  box-shadow:              var(--shadow), var(--shadow-inset);
+}
+
+@mixin glass-tile-surface {
+  background: var(--surface-tile);
+  border:     1px solid var(--border-tile);
+}

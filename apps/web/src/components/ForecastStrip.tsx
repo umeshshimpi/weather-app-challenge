@@ -1,5 +1,6 @@
 import type { WeatherResponse } from "@weather/domain";
-import { formatTemperature, formatWeekday, getWeatherEmoji } from "@weather/domain";
+import { formatTemperature, formatWeekday, getWeatherIconId } from "@weather/domain";
+import { WeatherConditionIcon } from "./WeatherConditionIcon";
 
 interface ForecastStripProps {
   data: WeatherResponse;
@@ -20,9 +21,12 @@ export function ForecastStrip({ data }: ForecastStripProps) {
             <span className="forecast-day-label">
               {index === 0 ? "Today" : formatWeekday(day.date)}
             </span>
-            <span className="forecast-day-icon">
-              {getWeatherEmoji(day.weatherCode, true)}
-            </span>
+            <WeatherConditionIcon
+              id={getWeatherIconId(day.weatherCode, true)}
+              size={24}
+              className="forecast-day-icon"
+              aria-label={String(day.weatherCode)}
+            />
             {day.precipitationProbability > 0 && (
               <span className="forecast-rain-chance">
                 {day.precipitationProbability}%

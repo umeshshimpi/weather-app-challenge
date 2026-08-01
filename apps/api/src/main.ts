@@ -17,7 +17,7 @@ async function bootstrap() {
   const swaggerConfig = new DocumentBuilder()
     .setTitle("WeatherNow API")
     .setDescription(
-      "Real-time weather conditions and 7-day forecasts for any city, powered by Open-Meteo."
+      "Real-time weather conditions and 7-day forecasts for any city."
     )
     .setVersion("1.0")
     .addTag("weather")

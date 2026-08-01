@@ -23,7 +23,7 @@ export class WeatherController {
   @ApiOperation({
     summary: "Get current weather and 7-day forecast",
     description:
-      "Returns real-time conditions and a 7-day forecast for any city worldwide. Powered by Open-Meteo — no API key required.",
+      "Returns real-time conditions and a 7-day forecast for any city worldwide.",
   })
   @ApiOkResponse({ description: "Weather data retrieved successfully" })
   @ApiNotFoundResponse({ description: "City not found" })

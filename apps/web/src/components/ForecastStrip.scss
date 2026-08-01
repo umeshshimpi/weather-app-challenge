@@ -1,4 +1,4 @@
-/* ─── 7-day forecast strip ────────────────────────────────────────────────── */
+// 7-day forecast strip
 .forecast-card {
   border-radius: var(--radius-card);
   padding: 1.5rem;
@@ -10,7 +10,7 @@
   gap: 0.5rem;
 }
 
-/* ─── Per-day column ─────────────────────────────────────────────────────── */
+// Per-day column
 .forecast-day {
   border-radius: var(--radius-tile);
   padding: 0.75rem 0.25rem;
@@ -20,10 +20,10 @@
   gap: 0.5rem;
   text-align: center;
   transition: background var(--transition);
-}
 
-.forecast-day-active {
-  box-shadow: 0 0 0 1px rgba(255 255 255 / 30%);
+  &.forecast-day-active {
+    box-shadow: 0 0 0 1px rgba(255 255 255 / 30%);
+  }
 }
 
 .forecast-day-label {
@@ -32,9 +32,10 @@
   font-weight: 500;
 }
 
+// SVG condition icon — sized via the `size` prop on WeatherConditionIcon
 .forecast-day-icon {
-  font-size: 1.5rem;
-  line-height: 1;
+  display: inline-flex;
+  color: var(--text);
 }
 
 .forecast-rain-chance {

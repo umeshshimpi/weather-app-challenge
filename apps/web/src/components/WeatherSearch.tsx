@@ -1,12 +1,20 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
+import { Clock, Search } from "lucide-react";
 import type { LocationSuggestion } from "@weather/domain";
 
 interface WeatherSearchProps {
   onSearch: (city: string) => void;
   isLoading: boolean;
+  recentSearches?: string[];
+  onRecentSearch?: (city: string) => void;
 }
 
-export function WeatherSearch({ onSearch, isLoading }: WeatherSearchProps) {
+export function WeatherSearch({
+  onSearch,
+  isLoading,
+  recentSearches = [],
+  onRecentSearch,
+}: WeatherSearchProps) {
   const [inputValue, setInputValue] = useState("");
   const [suggestions, setSuggestions] = useState<LocationSuggestion[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -29,7 +37,7 @@ export function WeatherSearch({ onSearch, isLoading }: WeatherSearchProps) {
           `/api/weather/suggestions?q=${encodeURIComponent(inputValue.trim())}`
         );
         if (res.ok) {
-          const data: LocationSuggestion[] = await res.json();
+          const data = (await res.json()) as LocationSuggestion[];
           setSuggestions(data);
           setShowDropdown(data.length > 0);
         }
@@ -73,51 +81,79 @@ export function WeatherSearch({ onSearch, isLoading }: WeatherSearchProps) {
     setShowDropdown(false);
   }
 
+  function handleRecentSearch(city: string) {
+    setInputValue(city);
+    onRecentSearch?.(city);
+    setShowDropdown(false);
+  }
+
+  const showRecent = inputValue === "" && recentSearches.length > 0;
+
   return (
-    <form onSubmit={handleSubmit}>
-      <div className="search-row">
-        <div className="search-field-wrap" ref={fieldWrapRef}>
-          <span className="search-icon">🔍</span>
-          <input
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onFocus={() => suggestions.length > 0 && setShowDropdown(true)}
-            placeholder="Search city (e.g. Tokyo, New York...)"
-            disabled={isLoading}
-            className="search-input"
-            autoComplete="off"
-          />
+    <div>
+      <form onSubmit={handleSubmit}>
+        <div className="search-row">
+          <div className="search-field-wrap" ref={fieldWrapRef}>
+            <Search size={16} className="search-icon" aria-hidden="true" />
+            <input
+              type="text"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onFocus={() => suggestions.length > 0 && setShowDropdown(true)}
+              placeholder="Search city (e.g. Tokyo, New York...)"
+              disabled={isLoading}
+              className="search-input"
+              autoComplete="off"
+            />
 
-          {showDropdown && (
-            <ul className="suggestions-dropdown" role="listbox">
-              {suggestions.map((s, i) => (
-                <li key={i} role="option">
-                  {/* onMouseDown fires before onBlur so the click is not swallowed */}
-                  <button
-                    type="button"
-                    className="suggestion-item"
-                    onMouseDown={() => handleSelectSuggestion(s)}
-                  >
-                    <span className="suggestion-name">
-                      {s.name}{s.region ? `, ${s.region}` : ""}
-                    </span>
-                    <span className="suggestion-country">{s.country}</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
+            {showDropdown && (
+              <ul className="suggestions-dropdown" role="listbox">
+                {suggestions.map((s, i) => (
+                  <li key={i} role="option">
+                    <button
+                      type="button"
+                      className="suggestion-item"
+                      onMouseDown={() => handleSelectSuggestion(s)}
+                    >
+                      <span className="suggestion-name">
+                        {s.name}{s.region ? `, ${s.region}` : ""}
+                      </span>
+                      <span className="suggestion-country">{s.country}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            disabled={isLoading || !inputValue.trim()}
+            className="search-button"
+          >
+            {isLoading ? "Loading..." : "Search"}
+          </button>
         </div>
+      </form>
 
-        <button
-          type="submit"
-          disabled={isLoading || !inputValue.trim()}
-          className="search-button"
-        >
-          {isLoading ? "Loading..." : "Search"}
-        </button>
-      </div>
-    </form>
+      {showRecent && (
+        <div className="recent-searches" role="navigation" aria-label="Recent searches">
+          <span className="recent-searches-label">
+            <Clock size={12} aria-hidden="true" />
+            Recent
+          </span>
+          {recentSearches.map((city) => (
+            <button
+              key={city}
+              type="button"
+              className="recent-search-chip"
+              onClick={() => handleRecentSearch(city)}
+            >
+              {city}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }

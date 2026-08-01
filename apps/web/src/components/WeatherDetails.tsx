@@ -1,3 +1,11 @@
+import {
+  Cloud,
+  CloudRain,
+  Droplets,
+  Gauge,
+  Thermometer,
+  Wind,
+} from "lucide-react";
 import type { WeatherResponse } from "@weather/domain";
 
 interface WeatherDetailsProps {
@@ -5,7 +13,7 @@ interface WeatherDetailsProps {
 }
 
 interface DetailTileProps {
-  icon: string;
+  icon: React.ReactNode;
   label: string;
   value: string;
   sub?: string;
@@ -14,7 +22,10 @@ interface DetailTileProps {
 function DetailTile({ icon, label, value, sub }: DetailTileProps) {
   return (
     <div className="glass-tile detail-tile">
-      <span className="detail-label">{icon} {label}</span>
+      <span className="detail-label">
+        <span className="detail-icon" aria-hidden="true">{icon}</span>
+        {label}
+      </span>
       <span className="detail-value">{value}</span>
       {sub && <span className="detail-sub">{sub}</span>}
     </div>
@@ -31,7 +42,7 @@ export function WeatherDetails({ data }: WeatherDetailsProps) {
       <h2 className="section-heading">Current Details</h2>
       <div className="details-grid">
         <DetailTile
-          icon="💧"
+          icon={<Droplets size={14} />}
           label="Humidity"
           value={`${current.humidity}%`}
           sub={
@@ -41,13 +52,13 @@ export function WeatherDetails({ data }: WeatherDetailsProps) {
           }
         />
         <DetailTile
-          icon="🌬️"
+          icon={<Wind size={14} />}
           label="Wind"
           value={`${Math.round(current.windSpeed)} ${windUnit}`}
           sub={`${current.windDirectionLabel} · Gusts ${Math.round(current.windGusts)} ${windUnit}`}
         />
         <DetailTile
-          icon="🔵"
+          icon={<Gauge size={14} />}
           label="Pressure"
           value={`${pressureHpa} hPa`}
           sub={
@@ -57,7 +68,7 @@ export function WeatherDetails({ data }: WeatherDetailsProps) {
           }
         />
         <DetailTile
-          icon="☁️"
+          icon={<Cloud size={14} />}
           label="Cloud Cover"
           value={`${current.cloudCover}%`}
           sub={
@@ -67,13 +78,13 @@ export function WeatherDetails({ data }: WeatherDetailsProps) {
           }
         />
         <DetailTile
-          icon="🌧️"
+          icon={<CloudRain size={14} />}
           label="Precipitation"
           value={`${current.precipitation} mm`}
           sub="Last hour"
         />
         <DetailTile
-          icon="🌡️"
+          icon={<Thermometer size={14} />}
           label="Dew Point"
           value={`${computeDewPoint(current.temperature, current.humidity, unit)}°`}
           sub="Moisture level"

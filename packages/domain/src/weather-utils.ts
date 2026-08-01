@@ -1,4 +1,4 @@
-import type { TemperatureUnit } from "./types";
+import type { TemperatureUnit, WeatherIconId } from "./types";
 
 /**
  * Maps WMO Weather Interpretation Codes to human-readable descriptions.
@@ -36,18 +36,21 @@ export function getWeatherDescription(weatherCode: number): string {
 }
 
 /**
- * Maps WMO codes to an emoji representing the condition.
+ * Maps a WMO weather code to a semantic icon identifier.
+ * The frontend maps these IDs to SVG components, keeping the domain free of
+ * any UI-framework dependencies.
  */
-export function getWeatherEmoji(weatherCode: number, isDay: boolean): string {
-  if (weatherCode === 0) return isDay ? "☀️" : "🌙";
-  if (weatherCode <= 2) return isDay ? "🌤️" : "🌙";
-  if (weatherCode === 3) return "☁️";
-  if (weatherCode <= 48) return "🌫️";
-  if (weatherCode <= 55) return "🌦️";
-  if (weatherCode <= 65) return "🌧️";
-  if (weatherCode <= 77) return "❄️";
-  if (weatherCode <= 86) return "🌨️";
-  return "⛈️";
+export function getWeatherIconId(weatherCode: number, isDay: boolean): WeatherIconId {
+  if (weatherCode === 0) return isDay ? "clear-day" : "clear-night";
+  if (weatherCode <= 2) return isDay ? "partly-cloudy-day" : "partly-cloudy-night";
+  if (weatherCode === 3) return "overcast";
+  if (weatherCode <= 48) return "fog";
+  if (weatherCode <= 55) return "drizzle";
+  if (weatherCode <= 67) return "rain";
+  if (weatherCode <= 77) return "snow";
+  if (weatherCode <= 82) return "rain";
+  if (weatherCode <= 86) return "snow-showers";
+  return "thunderstorm";
 }
 
 /**
@@ -60,38 +63,26 @@ export function getWindDirectionLabel(degrees: number): string {
 }
 
 /**
- * Returns a UV index safety level and advice.
+ * Returns a UV index safety level and protective advice.
  */
-export function getUvIndexLevel(uvIndex: number): {
-  level: string;
-  advice: string;
-  color: string;
-} {
-  if (uvIndex < 3) {
-    return { level: "Low", advice: "No protection needed", color: "text-green-400" };
-  }
-  if (uvIndex < 6) {
-    return { level: "Moderate", advice: "Wear sunscreen SPF 30+", color: "text-yellow-400" };
-  }
-  if (uvIndex < 8) {
-    return { level: "High", advice: "SPF 50+, seek shade midday", color: "text-orange-400" };
-  }
-  if (uvIndex < 11) {
-    return { level: "Very High", advice: "Avoid the sun 10am–4pm", color: "text-red-400" };
-  }
-  return { level: "Extreme", advice: "Stay indoors if possible", color: "text-purple-400" };
+export function getUvIndexLevel(uvIndex: number): { level: string; advice: string } {
+  if (uvIndex < 3) return { level: "Low",       advice: "No protection needed" };
+  if (uvIndex < 6) return { level: "Moderate",  advice: "Wear sunscreen SPF 30+" };
+  if (uvIndex < 8) return { level: "High",      advice: "SPF 50+, seek shade midday" };
+  if (uvIndex < 11) return { level: "Very High", advice: "Avoid the sun 10am–4pm" };
+  return              { level: "Extreme",   advice: "Stay indoors if possible" };
 }
 
 /**
  * Determines the temperature comfort category.
  */
-export function getTemperatureCategory(celsius: number): { label: string; emoji: string } {
-  if (celsius <= 0) return { label: "Freezing", emoji: "🥶" };
-  if (celsius <= 10) return { label: "Cold", emoji: "🧥" };
-  if (celsius <= 18) return { label: "Cool", emoji: "🌬️" };
-  if (celsius <= 24) return { label: "Comfortable", emoji: "😊" };
-  if (celsius <= 30) return { label: "Warm", emoji: "😎" };
-  return { label: "Hot", emoji: "🥵" };
+export function getTemperatureCategory(celsius: number): { label: string } {
+  if (celsius <= 0)  return { label: "Freezing" };
+  if (celsius <= 10) return { label: "Cold" };
+  if (celsius <= 18) return { label: "Cool" };
+  if (celsius <= 24) return { label: "Comfortable" };
+  if (celsius <= 30) return { label: "Warm" };
+  return               { label: "Hot" };
 }
 
 /**

@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   getWeatherDescription,
-  getWeatherEmoji,
+  getWeatherIconId,
   getWindDirectionLabel,
   getUvIndexLevel,
   getTemperatureCategory,
@@ -24,23 +24,31 @@ describe("getWeatherDescription", () => {
   });
 });
 
-describe("getWeatherEmoji", () => {
-  it("shows sun for clear sky during the day", () => {
-    expect(getWeatherEmoji(0, true)).toBe("☀️");
+describe("getWeatherIconId", () => {
+  it("returns 'clear-day' for clear sky during the day", () => {
+    expect(getWeatherIconId(0, true)).toBe("clear-day");
   });
 
-  it("shows moon for clear sky at night", () => {
-    expect(getWeatherEmoji(0, false)).toBe("🌙");
+  it("returns 'clear-night' for clear sky at night", () => {
+    expect(getWeatherIconId(0, false)).toBe("clear-night");
   });
 
-  it("shows thunderstorm emoji for code 95+", () => {
-    expect(getWeatherEmoji(95, true)).toBe("⛈️");
-    expect(getWeatherEmoji(99, true)).toBe("⛈️");
+  it("returns 'thunderstorm' for code 95+", () => {
+    expect(getWeatherIconId(95, true)).toBe("thunderstorm");
+    expect(getWeatherIconId(99, true)).toBe("thunderstorm");
   });
 
-  it("shows snow emoji for codes 71–77", () => {
-    expect(getWeatherEmoji(71, true)).toBe("❄️");
-    expect(getWeatherEmoji(75, true)).toBe("❄️");
+  it("returns 'snow' for snow codes 71–77", () => {
+    expect(getWeatherIconId(71, true)).toBe("snow");
+    expect(getWeatherIconId(75, true)).toBe("snow");
+  });
+
+  it("returns 'rain' for rain codes 61–67", () => {
+    expect(getWeatherIconId(63, true)).toBe("rain");
+  });
+
+  it("returns 'fog' for fog codes up to 48", () => {
+    expect(getWeatherIconId(45, true)).toBe("fog");
   });
 });
 
