@@ -6,13 +6,19 @@
     "apps/*",
     "packages/*"
   ],
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
+    "postinstall": "npm run build -w packages/domain",
     "dev": "concurrently --names api,web --prefix-colors blue,green \"npm run dev -w apps/api\" \"npm run dev -w apps/web\"",
     "build": "npm run build -w packages/domain && npm run build -w apps/api && npm run build -w apps/web",
+    "build:api": "npm run build -w packages/domain && npm run build -w apps/api",
+    "start": "npm run start -w apps/api",
     "test": "vitest run",
     "test:watch": "vitest",
     "coverage": "vitest run --coverage",
-    "typecheck": "tsc -p packages/domain/tsconfig.json --noEmit && tsc -p apps/api/tsconfig.json --noEmit && tsc -p apps/web/tsconfig.json --noEmit",
+    "typecheck": "tsc -p packages/domain/tsconfig.json --noEmit && npm run build -w packages/domain && tsc -p apps/api/tsconfig.json --noEmit && tsc -p apps/web/tsconfig.json --noEmit",
     "lint": "eslint apps packages"
   },
   "devDependencies": {

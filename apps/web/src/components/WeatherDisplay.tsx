@@ -2,6 +2,7 @@ import { useState } from "react";
 import { CloudOff, CloudSun, MapPin } from "lucide-react";
 import type { TemperatureUnit, WeatherResponse } from "@weather/domain";
 import { getConditionClass } from "@weather/domain";
+import { apiUrl } from "../lib/api";
 import { WeatherSearch } from "./WeatherSearch";
 import { CurrentWeather } from "./CurrentWeather";
 import { WeatherDetails } from "./WeatherDetails";
@@ -42,7 +43,7 @@ export function WeatherDisplay() {
 
     try {
       const response = await fetch(
-        `/api/weather?city=${encodeURIComponent(city)}&units=${selectedUnit}`
+        apiUrl(`/api/weather?city=${encodeURIComponent(city)}&units=${selectedUnit}`)
       );
 
       if (!response.ok) {
@@ -91,7 +92,7 @@ export function WeatherDisplay() {
           <header className="app-header">
             <h1 className="app-title">
               <CloudSun className="app-title-icon" aria-hidden="true" />
-              WeatherNow
+              Weather Forecast
             </h1>
             <p className="app-subtitle">Real-time weather app</p>
           </header>

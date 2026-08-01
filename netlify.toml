@@ -1,0 +1,22 @@
+# Netlify hosts the static Vite frontend only.
+# The NestJS API must be deployed separately (e.g. Railway).
+# Set VITE_API_URL in Netlify environment variables to the API origin.
+
+[build]
+  command = "npm run build -w apps/web"
+  publish = "apps/web/dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"

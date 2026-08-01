@@ -1,0 +1,13 @@
+# Railway production config for the NestJS API.
+# Docs: https://docs.railway.app/guides/config-as-code
+
+[build]
+builder = "RAILPACK"
+buildCommand = "npm run build:api"
+
+[deploy]
+startCommand = "npm run start"
+healthcheckPath = "/docs"
+healthcheckTimeout = 30
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 5

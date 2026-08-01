@@ -1,4 +1,4 @@
-# WeatherNow
+# Weather Forecast
 
 Search any city in the world and instantly see current conditions, a 7-day forecast, UV safety advice, dew point, and a smart recommendation ("bring an umbrella", "stay hydrated", etc.). The background shifts based on whether it's sunny, rainy, snowy, or a thunderstorm. As you type, a location dropdown suggests matching cities.
 
@@ -69,22 +69,21 @@ src/
 src/
   main.tsx
   App.tsx
+  lib/api.ts             API base URL helper (VITE_API_URL)
   components/
     WeatherDisplay.tsx   State management, fetch, layout
     WeatherSearch.tsx    Search input with debounced autocomplete dropdown
     CurrentWeather.tsx   Main temperature card
     WeatherDetails.tsx   Humidity, wind, pressure, dew point
     ForecastStrip.tsx    7-day forecast grid
+    WeatherConditionIcon.tsx  Maps WeatherIconId → Lucide SVG
   styles/
-    styles.css           Entry point — imports all feature stylesheets
-    theme.css            CSS custom properties + condition gradients + resets
-    motion.css           @keyframes
-    layout.css           Page wrapper, container, header
-    search.css           Form, input, autocomplete dropdown
-    weather-card.css     Current weather card
-    details.css          Detail tiles grid
-    forecast.css         7-day forecast strip
-    states.css           Loading skeletons, error, idle states
+    main.scss            Entry point — tokens, animations, shell
+    _tokens.scss
+    _animations.scss
+    _app-shell.scss
+    _mixins.scss
+  # Component SCSS files live next to their .tsx files
 ```
 
 ### packages/domain
@@ -98,10 +97,43 @@ Shared between both apps. Contains all TypeScript interfaces (`types.ts`) and pu
 ```bash
 npm run dev          # Start both servers (NestJS + Vite) concurrently
 npm run build        # Production build across all workspaces
+npm run build:api    # Build domain + NestJS API only (used by Railway)
+npm start            # Start the compiled NestJS API
 npm test             # Run all Vitest tests
 npm run coverage     # Coverage report
 npm run typecheck    # TypeScript check across the monorepo
 ```
+
+---
+
+## Deployment
+
+This is a split deploy: **Netlify** serves the static frontend, **Railway** runs the NestJS API.
+
+### 1. Deploy the API on Railway
+
+1. Create a new Railway project from this GitHub repo (root directory = repo root).
+2. Railway reads `railway.toml` and runs:
+   - Build: `npm run build:api`
+   - Start: `npm run start`
+3. Set environment variable:
+
+```bash
+CORS_ORIGINS=https://weather-forecast-strip.netlify.app,http://localhost:5173
+```
+
+4. Copy the public Railway URL (for example `https://your-service.up.railway.app`).
+
+### 2. Deploy the frontend on Netlify
+
+1. Netlify uses `netlify.toml` (`npm run build -w apps/web`, publish `apps/web/dist`).
+2. Set environment variable:
+
+```bash
+VITE_API_URL=https://your-service.up.railway.app
+```
+
+3. Trigger a new Netlify deploy so Vite bakes that URL into the build.
 
 ---
 
@@ -206,11 +238,11 @@ Beyond fetching and displaying raw data, the app derives several additional insi
 ```
 npm test
 
- ✓ packages/domain/src/__tests__/weather-utils.test.ts   (31 tests)
- ✓ apps/api/src/weather/weather.service.spec.ts           (4 tests)
+ ✓ packages/domain/src/__tests__/weather-utils.test.ts
+ ✓ apps/api/src/weather/weather.service.spec.ts
 
  Test Files  2 passed
- Tests       35 passed
+ Tests       37 passed
 ```
 
 The domain tests cover every pure utility function. The service tests use `@nestjs/testing` to spin up a real NestJS test module and mock `fetch` to verify the success path, city-not-found (404), and both upstream failure paths (502).
@@ -242,7 +274,7 @@ A few things already in place and a few that would be added before a real deploy
 |--|--|
 | Backend | NestJS 10, TypeScript 5 |
 | Frontend | React 19, Vite 6 |
-| Styling | Plain CSS with custom properties — no framework |
+| Styling | SCSS with custom properties — no CSS framework |
 | Testing | Vitest 3, @nestjs/testing |
 | Weather data | Open-Meteo |
 | Runtime | Node.js 18+ |

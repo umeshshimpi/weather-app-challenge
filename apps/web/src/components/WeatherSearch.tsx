@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { Clock, Search } from "lucide-react";
 import type { LocationSuggestion } from "@weather/domain";
+import { apiUrl } from "../lib/api";
 
 interface WeatherSearchProps {
   onSearch: (city: string) => void;
@@ -34,7 +35,7 @@ export function WeatherSearch({
     debounceRef.current = setTimeout(async () => {
       try {
         const res = await fetch(
-          `/api/weather/suggestions?q=${encodeURIComponent(inputValue.trim())}`
+          apiUrl(`/api/weather/suggestions?q=${encodeURIComponent(inputValue.trim())}`)
         );
         if (res.ok) {
           const data = (await res.json()) as LocationSuggestion[];
