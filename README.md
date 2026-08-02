@@ -1,6 +1,6 @@
 # Weather Forecast
 
-Search any city in the world and instantly see current conditions, a 7-day forecast, UV safety advice, dew point, and a smart recommendation ("bring an umbrella", "stay hydrated", etc.). The background shifts based on whether it's sunny, rainy, snowy, or a thunderstorm. As you type, a location dropdown suggests matching cities.
+Search any city in the world and instantly see current conditions, a 7-day forecast, UV safety advice, a comfort index, and a smart recommendation ("bring an umbrella", "stay hydrated", etc.). The background shifts based on whether it's sunny, rainy, snowy, or a thunderstorm. As you type, a location dropdown suggests matching cities.
 
 Built as a **NestJS API + React/Vite frontend** monorepo. No API keys needed.
 
@@ -113,6 +113,7 @@ npm start            # Start the compiled NestJS API
 npm test             # Run all Vitest tests
 npm run coverage     # Coverage report
 npm run typecheck    # TypeScript check across the monorepo
+npm run lint         # ESLint across apps/ and packages/
 ```
 
 ---
@@ -133,7 +134,7 @@ This is a split deploy: **Netlify** serves the static frontend, **Railway** runs
 CORS_ORIGINS=https://weather-forecast-strip.netlify.app,http://localhost:5173
 ```
 
-4. Copy the public Railway URL (for example `https://your-service.up.railway.app`).
+4. Copy the public Railway URL (`https://weather-app-challenge-production.up.railway.app`).
 
 ### 2. Deploy the frontend on Netlify
 
@@ -141,7 +142,7 @@ CORS_ORIGINS=https://weather-forecast-strip.netlify.app,http://localhost:5173
 2. Set environment variable:
 
 ```bash
-VITE_API_URL=https://your-service.up.railway.app
+VITE_API_URL=https://weather-app-challenge-production.up.railway.app
 ```
 
 3. Trigger a new Netlify deploy so Vite bakes that URL into the build.
@@ -158,6 +159,8 @@ Interactive documentation is at **http://localhost:3000/docs** (Swagger UI).
 |-------------|----------|---------|-------------|
 | `city` | Yes | — | City name, e.g. `Tokyo` |
 | `units` | No | `metric` | `metric` or `imperial` |
+
+The web UI defaults to **imperial (°F)**; the API itself defaults to `metric` when `units` is omitted.
 
 **200 OK**
 
@@ -257,7 +260,7 @@ npm test
  ✓ |web|  apps/web/src/components/__tests__/*.test.tsx
 
  Test Files  11 passed
- Tests       81 passed
+ Tests       96 passed
 ```
 
 Vitest runs two projects (see `vitest.config.ts`): a `node` project for the domain logic and the NestJS API, and a `web` project (jsdom + React Testing Library) for frontend components.
@@ -268,7 +271,7 @@ Vitest runs two projects (see `vitest.config.ts`): a `node` project for the doma
 | `WeatherService` | Success path, city-not-found (404), both upstream failure paths (502), autocomplete suggestions, and that imperial units are actually forwarded to Open-Meteo | `@nestjs/testing` spins up a real Nest module; `fetch` is mocked |
 | `WeatherController` | Confirms each route delegates to the service with the right arguments and default units | `@nestjs/testing` with a mocked `WeatherService` provider |
 | DTOs | Validation passes/fails as expected (`class-validator`), whitespace trimming | `validate()` + `plainToInstance()` directly on the DTO classes |
-| Frontend components | Idle/error/success flows (`WeatherDisplay`), search submit + recent chips (`WeatherSearch`), render smoke tests for `CurrentWeather`, `WeatherDetails`, `ForecastStrip`, and `WeatherConditionIcon` | React Testing Library + `@testing-library/user-event`, `fetch` mocked |
+| Frontend components | Full coverage of `WeatherDisplay` (idle/error/network/loading/unit toggle/recent searches) and `WeatherSearch` (submit, debounce autocomplete, dropdown, outside-click); smoke tests for `CurrentWeather`, `WeatherDetails`, `ForecastStrip`, and `WeatherConditionIcon` | React Testing Library + `@testing-library/user-event`, `fetch` mocked |
 
 Run `npm run coverage` for a full line/branch report.
 
@@ -289,7 +292,7 @@ A few things already in place and a few that would be added before a real deploy
 | Response caching | Would add `@nestjs/cache-manager` + a short TTL (e.g. 5 min) to avoid hammering the upstream on repeated city searches |
 | Rate limiting | Would add `@nestjs/throttler` to the app module |
 | Health endpoint | Would add `GET /health` for load-balancer checks |
-| CI | `npm test` runs clean with no external services needed |
+| CI | `npm test`, `npm run typecheck`, and `npm run lint` run clean with no external services needed |
 
 ---
 
@@ -301,5 +304,6 @@ A few things already in place and a few that would be added before a real deploy
 | Frontend | React 19, Vite 6 |
 | Styling | SCSS with custom properties — no CSS framework |
 | Testing | Vitest 3, @nestjs/testing, React Testing Library |
+| Linting | ESLint 9 flat config (`eslint.config.js`) |
 | Weather data | Open-Meteo |
 | Runtime | Node.js 18+ |
