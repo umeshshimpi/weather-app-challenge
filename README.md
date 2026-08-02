@@ -11,7 +11,7 @@ Built as a **NestJS API + React/Vite frontend** monorepo. No API keys needed.
 **Requires Node.js 18+**
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/weather-app-challenge.git
+git clone https://github.com/umeshshimpi/weather-app-challenge.git
 cd weather-app-challenge
 npm install
 npm run dev
